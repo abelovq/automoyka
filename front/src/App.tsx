@@ -1,25 +1,48 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+
+import { createTheme } from '@mui/material/styles';
+import { green, purple } from '@mui/material/colors';
+import { Container, ThemeProvider } from '@mui/material';
+import { SearchControl, YMaps, Map } from 'react-yandex-maps';
+
+const theme = createTheme({
+  components: {
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          height: '100%',
+        },
+      },
+    },
+  },
+  palette: {
+    primary: {
+      main: purple[500],
+    },
+    secondary: {
+      main: green[500],
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    // <ThemeProvider theme={theme}>
+    //   <Container >
+    <YMaps>
+      <Map
+        defaultState={{
+          center: [55.751574, 37.573856],
+          zoom: 9,
+          controls: [],
+        }}
+      >
+        <SearchControl options={{ float: 'right' }} />
+      </Map>
+    </YMaps>
+    //   </Container>
+    // </ThemeProvider>
   );
 }
 
