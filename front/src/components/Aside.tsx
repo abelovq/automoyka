@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import {
@@ -12,6 +13,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import MyCheckbox from './Checkbox';
+import { filterSearch } from '../store/actions';
 
 const useStyles = makeStyles({
   drawerPaper: {
@@ -25,19 +27,19 @@ interface IProps {
 }
 
 enum CarWashType {
-  ALL,
-  CONTACT,
-  MANUAL,
-  SELF_SERVICE,
-  FERRY,
-  ROBOT,
+  ALL = 'ALL',
+  CONTACT = 'CONTACT',
+  MANUAL = 'MANUAL',
+  SELF_SERVICE = 'SELF_SERVICE',
+  FERRY = 'FERRY',
+  ROBOT = 'ROBOT',
+  NEAR = 'NEAR',
 }
 
 type Filter = {
   id: number;
   label: string;
   value: CarWashType;
-  name: string;
 };
 
 const filters: Filter[] = [
@@ -45,43 +47,42 @@ const filters: Filter[] = [
     id: 1,
     label: 'Все',
     value: CarWashType.ALL,
-    name: 'all',
   },
   {
     id: 2,
     label: 'Контактная мойка',
     value: CarWashType.CONTACT,
-    name: 'contact',
   },
   {
     id: 3,
     label: 'Ручная мойка',
     value: CarWashType.MANUAL,
-    name: 'manual',
   },
   {
     id: 4,
     label: 'Мойка самообслуживания',
     value: CarWashType.SELF_SERVICE,
-    name: 'self',
   },
-  { id: 5, label: 'Мойка паром', value: CarWashType.FERRY, name: 'ferry' },
-  { id: 6, label: 'Робот мойка', value: CarWashType.ROBOT, name: 'robot' },
+  { id: 5, label: 'Мойка паром', value: CarWashType.FERRY },
+  { id: 6, label: 'Робот мойка', value: CarWashType.ROBOT },
+  { id: 7, label: 'Рядом со мной', value: CarWashType.NEAR },
 ];
+
+console.log(`filters`, filters[0].value);
 
 const Aside: FC<IProps> = ({ open, onOpen }) => {
   const classes = useStyles();
-  const [state, setState] = React.useState<{ [props: string]: boolean }>({
-    all: true,
-    contact: true,
-    manual: false,
-    self: false,
-    ferry: false,
-    robot: false,
+  const dispatch = useDispatch();
+  const [state, setState] = React.useState<{ [props: string]: boolean }>(() => {
+    const o = {} as { [prop: string]: boolean };
+    for (const item of filters) {
+      o[item.value] = false;
+    }
+    return o;
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.name === 'all') {
+    if (event.target.name === 'ALL') {
       const keys = Object.keys(state);
       const newState: typeof state = {};
       for (const key of keys) {
@@ -100,10 +101,28 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
     const keys = Object.keys(state);
     const newState: typeof state = {};
     for (const key of keys) {
-      newState[key] = true;
+      newState[key] = key === 'NEAR' ? false : true;
     }
     setState(newState);
   }, []);
+
+  const handleClick = () => {
+    window.navigator.geolocation.getCurrentPosition((data) => {
+      const { latitude, longitude } = data.coords;
+      const searchFilters = [];
+      for (const key in state) {
+        if (state[key] && key !== CarWashType.ALL) {
+          searchFilters.push(key);
+        }
+      }
+      dispatch(
+        filterSearch({
+          position: [latitude, longitude],
+          filters: [...searchFilters],
+        })
+      );
+    });
+  };
 
   return (
     <Drawer
@@ -125,14 +144,14 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
                     control={
                       <MyCheckbox
                         checked={
-                          el.name === 'all'
+                          el.value === 'ALL'
                             ? Object.values(state)
                                 .slice(1)
                                 .every((item) => item)
-                            : state[el.name]
+                            : state[el.value]
                         }
                         onChange={handleChange}
-                        name={el.name}
+                        name={el.value}
                       />
                     }
                     label={el.label}
@@ -140,7 +159,9 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
                 </ListItem>
               ))}
             </FormGroup>
-            <Button variant="outlined">Найти</Button>
+            <Button variant="outlined" onClick={handleClick}>
+              Найти
+            </Button>
           </FormControl>
         </List>
       </Box>
