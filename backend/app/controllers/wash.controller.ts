@@ -11,5 +11,6 @@ export const getAllWash = async (
     res.json(allwash);
   } catch (e) {
     console.log(e);
+    res.send({ message: "Error fuck you" });
   }
 };
