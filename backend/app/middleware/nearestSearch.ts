@@ -1,20 +1,10 @@
 import { carWashToUser } from "../Classes/CarWashToUser";
+import washService from "../services/wash.service";
 const user = {
   lon: 38.92,
   lat: 47.21,
 };
-const carWash = [
-  { id: 1, lon: 38.91, lat: 47.26 },
-  { id: 2, lon: 38.9, lat: 47.24 },
-  { id: 3, lon: 38.92, lat: 47.21 },
-  { id: 4, lon: 38.86, lat: 47.22 },
-  { id: 5, lon: 38.89, lat: 47.25 },
-  { id: 6, lon: 38.92, lat: 47.26 },
-  { id: 7, lon: 38.85, lat: 47.22 },
-  { id: 8, lon: 38.92, lat: 47.24 },
-  { id: 9, lon: 38.92, lat: 47.22 },
-  { id: 10, lon: 38.89, lat: 47.24 },
-];
+const carWash = washService.getAll();
 
 export const getNearestCarWash = (user: any, carWashes: any) => {
   const userLat = user.lat;
