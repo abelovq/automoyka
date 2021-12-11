@@ -36,6 +36,8 @@ model Busy_boxes {
   wash_id    Int
   client_id  Int
   time_start DateTime
+  num_car    String
+  num_box    Int
 
   wash   Car_Wash @relation(fields: [wash_id], references: [id])
   client User     @relation(fields: [client_id], references: [id])

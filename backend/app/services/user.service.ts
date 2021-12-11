@@ -3,10 +3,7 @@ import HttpException from "../exceptions/HttpExceptions";
 import prisma from "../prisma";
 
 class UserService {
-
   async createUser(userData: User): Promise<User> {
- 
-
     return await prisma.user
       .create({
         data: {
@@ -24,7 +21,7 @@ class UserService {
       .findFirst({
         where: {
           id,
-        }
+        },
       })
       .catch((err) => {
         console.log(err);
