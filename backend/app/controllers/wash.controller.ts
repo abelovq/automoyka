@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import HttpException from "../exceptions/HttpExceptions";
 import washService from "../services/wash.service";
+
 export const getAllWash = async (
   req: Request,
   res: Response,
@@ -15,21 +15,7 @@ export const getAllWash = async (
     res.send({ message: "Request error" });
   }
 };
-// export const getNearest = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const nearestWash = await washService
-//       .getNearest(req.body.position)
-//       .catch((e) => next(e));
-//     res.json(nearestWash);
-//   } catch (e) {
-//     console.log(e);
-//     res.send({ message: "Request error" });
-//   }
-// };
+
 export const getFilters = async (
   req: Request,
   res: Response,
@@ -48,14 +34,8 @@ export const getFilters = async (
       res.send({ message: "Request error" });
     }
   } else {
-    const filtersWithOutNear = filters.filter((i: string) => {
-      return i !== "NEAR";
-    });
     try {
-      const filtersWash = await washService.getFilters(
-        filtersWithOutNear,
-        position
-      );
+      const filtersWash = await washService.getFilters(filters, position);
       res.json(filtersWash);
     } catch (e) {
       console.log(e);

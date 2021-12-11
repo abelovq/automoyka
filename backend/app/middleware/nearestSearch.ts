@@ -1,4 +1,24 @@
-export function getDistanceFromLatLonInKm(
+import { Car_Wash } from ".prisma/client";
+import { CarWashToUser } from "../Classes/CarWashToUser";
+export const getNearestCarWash = (carWashes: Car_Wash[], user: number[]) => {
+  const [lat, lon] = user;
+  const nearestWash = carWashes.map((wash: Car_Wash) => {
+    const [washLat, washLon] = wash.coordinates;
+    const nearestWash = new CarWashToUser(
+      wash.id,
+      getDistanceFromLatLonInKm(lat, lon, washLat, washLon),
+      wash.adress,
+      wash.name,
+      wash.review_score,
+      wash.image_url,
+      wash.coordinates
+    );
+    if (nearestWash.distance <= 0) return null;
+    return nearestWash;
+  });
+  return nearestWash;
+};
+function getDistanceFromLatLonInKm(
   lat1: number,
   lon1: number,
   lat2: number,
