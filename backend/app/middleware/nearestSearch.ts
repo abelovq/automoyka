@@ -1,3 +1,4 @@
+import { carWashToUser } from "../Classes/CarWashToUser";
 const user = {
   lon: 38.92,
   lat: 47.21,
@@ -14,26 +15,12 @@ const carWash = [
   { id: 9, lon: 38.92, lat: 47.22 },
   { id: 10, lon: 38.89, lat: 47.24 },
 ];
-const radiusNearestSearch = 5;
-
-class washDistance {
-  id: number;
-  distance: number;
-  lat: number;
-  lon: number;
-  constructor(id: number, distance: number, lat: number, lon: number) {
-    this.id = id;
-    this.distance = distance;
-    this.lat = lat;
-    this.lon = lon;
-  }
-}
 
 export const getNearestCarWash = (user: any, carWashes: any) => {
   const userLat = user.lat;
   const userLon = user.lon;
   const allDistance = carWashes.map((wash: any) => {
-    const distance = new washDistance(
+    const distance = new carWashToUser(
       wash.id,
       getDistanceFromLatLonInKm(userLat, userLon, wash.lat, wash.lon),
       wash.lat,

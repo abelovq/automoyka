@@ -13,7 +13,7 @@ class UserService {
           ...userData,
         },
       })
-      .catch((ere) => {
+      .catch((err) => {
         console.log(err);
         throw new HttpException(400, "Cannot create user");
       });
@@ -34,11 +34,6 @@ class UserService {
 
   async updateUser(userData: Partial<User>): Promise<User> {
     const { id, ...updatingData } = userData;
-    const { name } = updatingData;
-
-    if (name !== undefined && !name) {
-      throw new HttpException(400, "name field cannot be empty");
-    }
 
     return await prisma.user
       .update({
