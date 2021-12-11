@@ -1,2 +1,3 @@
 backend/node_modules
+backend/http.http
 .DS_Store

@@ -1,28 +1,4 @@
-import { carWashToUser } from "../Classes/CarWashToUser";
-import washService from "../services/wash.service";
-const user = {
-  lon: 38.92,
-  lat: 47.21,
-};
-const carWash = washService.getAll();
-
-export const getNearestCarWash = (user: any, carWashes: any) => {
-  const userLat = user.lat;
-  const userLon = user.lon;
-  const allDistance = carWashes.map((wash: any) => {
-    const distance = new carWashToUser(
-      wash.id,
-      getDistanceFromLatLonInKm(userLat, userLon, wash.lat, wash.lon),
-      wash.lat,
-      wash.lon
-    );
-    if (distance.distance <= 0) return null;
-    return distance;
-  });
-  return allDistance;
-};
-
-function getDistanceFromLatLonInKm(
+export function getDistanceFromLatLonInKm(
   lat1: number,
   lon1: number,
   lat2: number,
@@ -39,6 +15,7 @@ function getDistanceFromLatLonInKm(
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c; // Distance in km
+
   if (distance <= 5) return distance;
   return 0;
 }
@@ -46,6 +23,3 @@ function getDistanceFromLatLonInKm(
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
 }
-const test = getNearestCarWash(user, carWash);
-
-console.log("distance", test);
