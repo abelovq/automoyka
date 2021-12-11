@@ -15,7 +15,9 @@ class WashServise {
   async getNearest(user: number[]) {
     const allWash = await prisma.car_Wash.findMany();
     const res = getNearestCarWash(allWash, user);
-    return res;
+    return res.filter((i: any) => {
+      return i != null;
+    });
   }
 
   async getFilters(filters: string[], user: number[]) {
@@ -31,7 +33,9 @@ class WashServise {
         },
       });
       const res = getNearestCarWash(groupedWash, user);
-      return res;
+      return res.filter((i: any) => {
+        return i != null;
+      });
     } else {
       const groupedWash = await prisma.car_Wash.findMany({
         where: {
