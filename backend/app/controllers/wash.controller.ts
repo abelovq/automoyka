@@ -8,6 +8,7 @@ export const getAllWash = async (
 ) => {
   try {
     const allwash = await washService.getAll().catch((e) => next(e));
+    console.log(`allwash`, allwash)
     res.json(allwash);
   } catch (e) {
     console.log(e);
