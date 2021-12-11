@@ -14,7 +14,7 @@ const getCarWashes = async(): Promise<any> => {
 const searchFilter = async(position: any, filters: any): Promise<any> => {
   // const {position, filters } = payload;
   try {
-    const request = await axios.post<any>('http://localhost:3001/api/wash/all', {position, filters})
+    const request = await axios.post<any>('http://localhost:3001/api/wash/filter', {position, filters})
     return request.data
   } catch(err) {
     return err
@@ -24,6 +24,7 @@ const searchFilter = async(position: any, filters: any): Promise<any> => {
 function* getAllCarWashesSaga() {
   try {
     const data: AxiosResponse<any> = yield call(getCarWashes)
+    console.log(`data`, data)
     yield put({type: 'SET_ALL_CAR_WASHES', payload: data});
   } catch (err) {
     yield put({type: 'SET_CAR_WASHES_ERROR'})

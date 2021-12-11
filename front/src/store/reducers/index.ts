@@ -11,6 +11,11 @@ const carWashesReducer = (state = initState, action: any) => {
         ...state, carWashes: action.payload
       }
     }
+    case 'SET_FINDED_CAR_WASHES': {
+      return {
+        ...state, carWashes: action.payload
+      }
+    }
     default:
       return state
   }
