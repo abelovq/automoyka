@@ -12,4 +12,23 @@ generator client {
 
 model User {
   id                Int                    @id @default(autoincrement())
+  car_number String
+}
+
+model Car_Wash {
+  id Int @id @default(autoincrement())
+  name String
+  image_url String
+  adress String
+  review_score Int
+  coordinates String
+  type CarWashType
+}
+
+enum CarWashType {
+ CONTACT
+ MANUAL
+ SELF_SERVICE
+ FERRY
+ ROBOT
 }
