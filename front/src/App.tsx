@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Container } from '@mui/material';
 import { SearchControl, YMaps, Map } from 'react-yandex-maps';
 import Navbar from './components/Navbar';
+import { getAllCarWashes } from './store/actions';
 
 function App() {
+  const carWashes = useSelector((data: any) => data.carWashes);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllCarWashes());
+  }, []);
+
+  console.log(`carWashes`, carWashes);
+
   return (
     <div className="App">
       <Navbar />

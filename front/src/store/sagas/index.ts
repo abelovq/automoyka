@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 
 const getCarWashes = async(): Promise<any> => {
   try {
-    const request = await axios.get<any>('localhost:3001/api/')
+    const request = await axios.get<any>('http://localhost:3001/api/wash/all')
     return request.data
   } catch(err) {
     return err
@@ -21,6 +21,6 @@ function* getAllCarWashes() {
 
 
 export default function* watchCarWashesSaga() {
-  yield takeEvery('GET_ALL', getAllCarWashes);
+  yield takeEvery('GET_ALL_CAR_WASHES', getAllCarWashes);
  
 }
