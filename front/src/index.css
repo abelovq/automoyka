@@ -12,6 +12,9 @@ code {
     monospace;
 }
 
-#root {
-  min-height: 100vh;
+html,
+body,
+#root,
+.App {
+  height: 100%;
 }

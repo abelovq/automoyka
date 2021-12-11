@@ -3,11 +3,11 @@ import Card from '@mui/material/Card';
 
 
 const Login = () => {
-    return (
-        <Card>
-            asdasd
-        </Card>
-    )
+	return (
+		<Card>
+			asdasd
+		</Card>
+	)
 }
 
 export default Login
