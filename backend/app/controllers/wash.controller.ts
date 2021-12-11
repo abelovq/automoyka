@@ -4,55 +4,6 @@ import HttpException from "../exceptions/HttpExceptions";
 import boxService from "../services/box.service";
 import washService from "../services/wash.service";
 
-export const getAllWash = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const allwash = await washService.getAll();
-    res.json(allwash);
-  } catch (e) {
-    console.log(e);
-    next(e);
-  }
-};
-
-export const getWashTimes = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { position, filters } = req.body;
-
-  if (filters[0] === "NEAR" && filters.length === 1) {
-    try {
-      const nearestWash = await washService
-        .getNearest(position)
-        .catch((e) => next(e));
-      res.json(nearestWash);
-    } catch (e) {
-      console.log(e);
-      res.send({ message: "Request error" });
-    }
-  } else {
-    try {
-      const filtersWash = await washService.getFilters(filters, position);
-      res.json(filtersWash);
-    } catch (e) {
-      console.log(e);
-      res.send({ message: "Request error" });
-    }
-  try {
-    const { id } = req.params;
-    await washService.getFreeTimesOfWashBayId(Number(id));
-    res.json(true);
-  } catch (e) {
-    console.log(e);
-    next(e);
-  }
-};
-
 export const bookWash = async (
   req: Request,
   res: Response,
@@ -79,4 +30,57 @@ export const bookWash = async (
     console.log(e);
     next(e);
   }
+};
+
+export const getAllWash = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const allwash = await washService.getAll();
+    res.json(allwash);
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+};
+
+export const getFilters = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { position, filters } = req.body;
+
+  if (filters[0] === "NEAR" && filters.length === 1) {
+    try {
+      const nearestWash = await washService
+        .getNearest(position)
+        .catch((e) => next(e));
+      res.json(nearestWash);
+    } catch (e) {
+      console.log(e);
+      res.send({ message: "Request error" });
+    }
+  } else {
+    try {
+      const filtersWash = await washService.getFilters(filters, position);
+      res.json(filtersWash);
+    } catch (e) {
+      console.log(e);
+      res.send({ message: "Request error" });
+    }
+  }
+};
+
+export const getWashTimes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  const result = await washService.getFreeTimesOfWashBayId(Number(id));
+
+  res.send(result);
 };
