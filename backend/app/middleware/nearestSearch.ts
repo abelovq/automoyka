@@ -56,5 +56,6 @@ function getDistanceFromLatLonInKm(
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
 }
+const test = getNearestCarWash(user, carWash);
 
-console.log("distance", getNearestCarWash(user, carWash));
+console.log("distance", test);
