@@ -3,15 +3,11 @@ import { Router } from "express";
 import {
   createUser,
   deleteUser,
-  getAllUsers,
   getUser,
   updateUser,
 } from "../controllers/user.controller";
 
 const router = Router();
-
-// get all users
-router.get("/users", getAllUsers);
 
 // get user by id
 router.get("/users/:id", getUser);
