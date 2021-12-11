@@ -9,7 +9,12 @@ interface IProps {
 
 const MyCheckbox: FC<IProps> = ({ onChange, name, checked }) => {
   return (
-    <Checkbox color="primary" checked={checked} defaultChecked name={name} />
+    <Checkbox
+      color="primary"
+      onChange={onChange}
+      checked={checked}
+      name={name}
+    />
   );
 };
 

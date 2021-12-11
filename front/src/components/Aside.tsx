@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import {
@@ -25,6 +25,7 @@ interface IProps {
 }
 
 enum CarWashType {
+  ALL,
   CONTACT,
   MANUAL,
   SELF_SERVICE,
@@ -42,29 +43,36 @@ type Filter = {
 const filters: Filter[] = [
   {
     id: 1,
+    label: 'Все',
+    value: CarWashType.ALL,
+    name: 'all',
+  },
+  {
+    id: 2,
     label: 'Контактная мойка',
     value: CarWashType.CONTACT,
     name: 'contact',
   },
   {
-    id: 2,
+    id: 3,
     label: 'Ручная мойка',
     value: CarWashType.MANUAL,
     name: 'manual',
   },
   {
-    id: 3,
+    id: 4,
     label: 'Мойка самообслуживания',
     value: CarWashType.SELF_SERVICE,
     name: 'self',
   },
-  { id: 4, label: 'Мойка паром', value: CarWashType.FERRY, name: 'ferry' },
-  { id: 5, label: 'Робот мойка', value: CarWashType.ROBOT, name: 'robot' },
+  { id: 5, label: 'Мойка паром', value: CarWashType.FERRY, name: 'ferry' },
+  { id: 6, label: 'Робот мойка', value: CarWashType.ROBOT, name: 'robot' },
 ];
 
 const Aside: FC<IProps> = ({ open, onOpen }) => {
   const classes = useStyles();
   const [state, setState] = React.useState<{ [props: string]: boolean }>({
+    all: true,
     contact: true,
     manual: false,
     self: false,
@@ -73,11 +81,29 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      [event.target.name]: event.target.checked,
-    });
+    if (event.target.name === 'all') {
+      const keys = Object.keys(state);
+      const newState: typeof state = {};
+      for (const key of keys) {
+        newState[key] = event.target.checked;
+      }
+      setState(newState);
+    } else {
+      setState({
+        ...state,
+        [event.target.name]: event.target.checked,
+      });
+    }
   };
+
+  useEffect(() => {
+    const keys = Object.keys(state);
+    const newState: typeof state = {};
+    for (const key of keys) {
+      newState[key] = true;
+    }
+    setState(newState);
+  }, []);
 
   return (
     <Drawer
@@ -88,12 +114,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
         paper: classes.drawerPaper,
       }}
     >
-      <Box
-        sx={{ width: 300, marginTop: '64px' }}
-        role="presentation"
-        onClick={onOpen}
-        onKeyDown={onOpen}
-      >
+      <Box sx={{ width: 300, marginTop: '64px' }} role="presentation">
         <List>
           <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
             <FormLabel component="legend">Filters</FormLabel>
@@ -103,9 +124,15 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
                   <FormControlLabel
                     control={
                       <MyCheckbox
-                        checked={state[el.name]}
+                        checked={
+                          el.name === 'all'
+                            ? Object.values(state)
+                                .slice(1)
+                                .every((item) => item)
+                            : state[el.name]
+                        }
                         onChange={handleChange}
-                        name="gilad"
+                        name={el.name}
                       />
                     }
                     label={el.label}
