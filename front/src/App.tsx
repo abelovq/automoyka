@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Container } from '@mui/material';
+import { Button, Container } from '@mui/material';
 import { YMaps, Map, Placemark } from 'react-yandex-maps';
 import Navbar from './components/Navbar';
 import { getAllCarWashes } from './store/actions';
@@ -10,31 +10,43 @@ import { getAllCarWashes } from './store/actions';
 function App() {
   const carWashes = useSelector((data: any) => data.carWashesReducer.carWashes);
   const dispatch = useDispatch();
-  const mapRef = useRef();
+  let mapRef = useRef();
+  const yMapRef = useRef();
 
   useEffect(() => {
     dispatch(getAllCarWashes());
   }, []);
 
-  const addRoute = (ymaps: any) => {
-    console.log(`ymaps`, { ymaps });
-    const pointA = [55.749, 37.524]; // Москва
-    const pointB = [59.918072, 30.304908]; // Санкт-Петербург
-
-    const multiRoute = new ymaps.multiRouter.MultiRoute(
-      {
-        referencePoints: [pointA, pointB],
-        params: {
-          routingMode: 'pedestrian',
-        },
-      },
-      {
-        boundsAutoApply: true,
-      }
-    );
-
-    (mapRef.current as any).geoObjects.add(multiRoute);
+  const onAvailable = (ymaps: any) => {
+    yMapRef.current = ymaps;
+    console.log(`adada.current`, yMapRef.current);
   };
+
+  const addRoute = () => {
+    console.log(`yMapRef.current`, yMapRef.current);
+    console.log(`mapRef.current`, mapRef.current);
+    if (yMapRef.current && mapRef.current) {
+      console.log(`131`, 131);
+      const pointA = [55.749, 37.524]; // Москва
+      const pointB = [59.918072, 30.304908]; // Санкт-Петербург
+      console.log(`MapRef.current`, mapRef.current);
+      // const multiRoute = new ymaps.multiRouter.MultiRoute(
+      //   {
+      //     referencePoints: [pointA, pointB],
+      //     params: {
+      //       routingMode: 'pedestrian',
+      //     },
+      //   },
+      //   {
+      //     boundsAutoApply: true,
+      //   }
+      // );
+      // // if (mapRef.current) {
+      // (mapRef.current as any).geoObjects.add(multiRoute);
+    }
+  };
+
+  // console.log(`yMapRef.current`, yMapRef.current);
 
   return (
     <div className="App">
@@ -52,7 +64,7 @@ function App() {
                 zoom: 12,
                 controls: [],
               }}
-              onLoad={addRoute}
+              onLoad={onAvailable}
             >
               {carWashes &&
                 carWashes.map((el: any) => (
@@ -67,6 +79,7 @@ function App() {
             </Map>
           </YMaps>
         </div>
+        <Button onClick={addRoute}>CLICK</Button>
       </Container>
     </div>
   );
