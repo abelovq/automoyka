@@ -3,19 +3,17 @@ import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Container } from '@mui/material';
-import { SearchControl, YMaps, Map } from 'react-yandex-maps';
+import { SearchControl, YMaps, Map, Placemark } from 'react-yandex-maps';
 import Navbar from './components/Navbar';
 import { getAllCarWashes } from './store/actions';
 
 function App() {
-  const carWashes = useSelector((data: any) => data.carWashes);
+  const carWashes = useSelector((data: any) => data.carWashesReducer.carWashes);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllCarWashes());
   }, []);
-
-  console.log(`carWashes`, carWashes);
 
   return (
     <div className="App">
@@ -27,11 +25,22 @@ function App() {
               width="100"
               height="100%"
               defaultState={{
-                center: [47.216629, 38.927731],
-                zoom: 9,
+                center: [47.24, 38.92],
+                zoom: 12,
                 controls: [],
               }}
-            ></Map>
+            >
+              {carWashes &&
+                carWashes.map((el: any) => (
+                  <Placemark
+                    geometry={el.coordinates}
+                    properties={{
+                      hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
+                    }}
+                    modules={['geoObject.addon.hint']}
+                  />
+                ))}
+            </Map>
           </YMaps>
         </div>
       </Container>

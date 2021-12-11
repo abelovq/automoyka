@@ -11,11 +11,15 @@ import theme from './mainTheme';
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
-import reducer from './store/reducers';
+import { rootReducer } from './store/reducers';
 import mySaga from './store/sagas';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(sagaMiddleware))
+);
 
 sagaMiddleware.run(mySaga);
 

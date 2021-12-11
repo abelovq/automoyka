@@ -13,7 +13,8 @@ const getCarWashes = async(): Promise<any> => {
 function* getAllCarWashes() {
   try {
     const data: AxiosResponse<any> = yield call(getCarWashes)
-    yield put({type: 'SET_CAR_WASHES', payload: data});
+    console.log(`data`, data)
+    yield put({type: 'SET_ALL_CAR_WASHES', payload: data});
   } catch (err) {
     yield put({type: 'SET_CAR_WASHES_ERROR'})
   }
