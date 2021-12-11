@@ -8,10 +8,58 @@ export const getAllWash = async (
 ) => {
   try {
     const allwash = await washService.getAll().catch((e) => next(e));
-    console.log(`allwash`, allwash)
+
     res.json(allwash);
   } catch (e) {
     console.log(e);
-    res.send({ message: "Error fuck you" });
+    res.send({ message: "Request error" });
+  }
+};
+// export const getNearest = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const nearestWash = await washService
+//       .getNearest(req.body.position)
+//       .catch((e) => next(e));
+//     res.json(nearestWash);
+//   } catch (e) {
+//     console.log(e);
+//     res.send({ message: "Request error" });
+//   }
+// };
+export const getFilters = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { position, filters } = req.body;
+
+  if (filters[0] === "NEAR" && filters.length === 1) {
+    try {
+      const nearestWash = await washService
+        .getNearest(position)
+        .catch((e) => next(e));
+      res.json(nearestWash);
+    } catch (e) {
+      console.log(e);
+      res.send({ message: "Request error" });
+    }
+  } else {
+    const filtersWithOutNear = filters.filter((i: string) => {
+      return i !== "NEAR";
+    });
+    try {
+      const filtersWash = await washService.getFilters(
+        filtersWithOutNear,
+        position
+      );
+      res.json(filtersWash);
+    } catch (e) {
+      console.log(e);
+      res.send({ message: "Request error" });
+    }
   }
 };
