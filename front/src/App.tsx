@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button, Container } from '@mui/material';
 import { YMaps, Map, Placemark } from 'react-yandex-maps';
 import Navbar from './components/Navbar';
-import { getAllCarWashes } from './store/actions';
+import { getAllCarWashes, getCarWash } from './store/actions';
 import WashCard from './components/washCard';
 
 function App() {
@@ -30,6 +30,7 @@ function App() {
     yMapRef.current = ymaps;
   };
   const handlePlaceMarkClick = (el: any) => () => {
+    dispatch(getCarWash({ carWashId: el.id }));
     setChosenWash({ ...el });
     setOpen(true);
   };
