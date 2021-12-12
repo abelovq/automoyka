@@ -18,6 +18,8 @@ import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/system';
 import React, { FC } from 'react';
 
+import { bookCarWash } from '../store/actions';
+
 interface IProps {
   open: boolean;
   onOpen: (e: any) => void;
@@ -27,7 +29,6 @@ interface IProps {
 }
 const WashCard: FC<IProps> = ({ wash, open, onOpen, onClose, addRoute }) => {
   const handleTakeTime = () => {
-    // диспатч экшена бронирования
     addRoute(wash.coordinates);
     onClose();
   };

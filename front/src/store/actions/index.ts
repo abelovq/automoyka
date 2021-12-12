@@ -16,3 +16,8 @@ export const getCarWash = (data: any) => ({
   type: "FIND_CAR_WASH",
   payload: data,
 });
+
+export const bookCarWash = (data: any) => ({
+  type: "BOOK_CAR_WASH",
+  payload: data,
+});
