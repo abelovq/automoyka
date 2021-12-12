@@ -1,6 +1,4 @@
-import { Busy_boxes } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import HttpException from "../exceptions/HttpExceptions";
 import boxService from "../services/box.service";
 import washService from "../services/wash.service";
 
@@ -19,12 +17,11 @@ export const bookWash = async (
       wash_id: Number(id),
       time_start: bookTime,
       num_box: Number(num_box),
-      num_car,
+      num_car: String(num_car).toLowerCase(),
     };
 
     const bookWosh = await boxService.createBusyBox(boxData);
 
-    // await washService.getFreeTimesOfWashBayId(Number(id));
     res.json(bookWosh);
   } catch (e) {
     console.log(e);
@@ -79,8 +76,12 @@ export const getWashTimes = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { id } = req.params;
-  const result = await washService.getFreeTimesOfWashBayId(Number(id));
+  try {
+    const { id } = req.params;
+    const result = await washService.getFreeTimesOfWashBayId(Number(id));
 
-  res.send(result);
+    res.send(result);
+  } catch (error) {
+    next(error);
+  }
 };
