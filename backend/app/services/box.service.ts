@@ -40,6 +40,52 @@ class BoxService {
       },
     });
   }
+
+  async getBusyBoxes({
+    id,
+    num_car,
+  }: {
+    id?: number;
+    num_car?: string;
+  }): Promise<Busy_boxes[]> {
+    const getWhere = () => {
+      if (!!id && !!num_car) {
+        return {
+          id,
+          num_car,
+        };
+      }
+      return {
+        OR: {
+          id,
+          num_car,
+        },
+      };
+    };
+
+    return await prisma.busy_boxes
+      .findMany({
+        where: {
+          ...getWhere(),
+        },
+      })
+      .catch((e) => {
+        throw new HttpException(404, "Cannot find any booked boxes");
+      });
+  }
+
+  async deleteBookedBox(id: number): Promise<Busy_boxes> {
+    return await prisma.busy_boxes
+      .delete({
+        where: {
+          id,
+        },
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new HttpException(404, "Cannot find booked box");
+      });
+  }
 }
 
 export default new BoxService();
