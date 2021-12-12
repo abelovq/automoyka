@@ -10,10 +10,15 @@ import {
   FormLabel,
   ListItem,
   Button,
+  Accordion,
+  AccordionSummary,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import MyCheckbox from './Checkbox';
 import { filterSearch } from '../store/actions';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const useStyles = makeStyles({
   drawerPaper: {
@@ -136,36 +141,66 @@ const Aside: FC<IProps> = ({ open, onOpen, onClose }) => {
       }}
     >
       <Box sx={{ width: 300, marginTop: '64px' }} role="presentation">
-        <List>
-          <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-            <FormLabel component="legend">Filters</FormLabel>
-            <FormGroup>
-              {filters.map((el: Filter, i) => (
-                <ListItem>
-                  <FormControlLabel
-                    control={
-                      <MyCheckbox
-                        checked={
-                          el.value === 'ALL'
-                            ? Object.values(state)
-                                .slice(1)
-                                .every((item) => item)
-                            : state[el.value]
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Фильтры</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <List>
+              <FormControl
+                sx={{ m: 3 }}
+                component="fieldset"
+                variant="standard"
+              >
+                <FormGroup>
+                  {filters.map((el: Filter, i) => (
+                    <ListItem>
+                      <FormControlLabel
+                        control={
+                          <MyCheckbox
+                            checked={
+                              el.value === 'ALL'
+                                ? Object.values(state)
+                                    .slice(1)
+                                    .every((item) => item)
+                                : state[el.value]
+                            }
+                            onChange={handleChange}
+                            name={el.value}
+                          />
                         }
-                        onChange={handleChange}
-                        name={el.value}
+                        label={el.label}
                       />
-                    }
-                    label={el.label}
-                  />
-                </ListItem>
-              ))}
-            </FormGroup>
-            <Button variant="outlined" onClick={handleClick}>
-              Найти
-            </Button>
-          </FormControl>
-        </List>
+                    </ListItem>
+                  ))}
+                </FormGroup>
+                <Button variant="outlined" onClick={handleClick}>
+                  Найти
+                </Button>
+              </FormControl>
+            </List>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Мои брони</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+              eget.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
       </Box>
     </Drawer>
   );
