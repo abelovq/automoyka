@@ -43,6 +43,26 @@ const bookCarWashTime = async(carWashId: number, time: any, numCar: string, boxN
   }
 }
 
+const getMyCarWashTime = async(carNum: string): Promise<any> => {
+  try {
+    const request = await axios.get<any>(`http://localhost:3001/api/books?num_car=${carNum}`)
+    
+    return request.data
+  } catch(err) {
+    return err
+  }
+}
+
+const cancelMyCarWashTime = async(bookNum: string): Promise<any> => {
+  try {
+    const request = await axios.get<any>(`http://localhost:3001/api/books/${bookNum}`)
+    
+    return request.data
+  } catch(err) {
+    return err
+  }
+}
+
 function* getAllCarWashesSaga() {
   try {
     const data: AxiosResponse<any> = yield call(getCarWashes)
@@ -83,6 +103,25 @@ function* bookCarWashTimeSaga(payload: any) {
   }
 }
 
+function* getMyCarWashTimeSaga(payload: any) {
+  try {
+    const { carNum } = payload.payload;
+    const data: AxiosResponse<any> = yield call(getMyCarWashTime, carNum)
+    yield put({type: 'SET_BOOKED_CAR_WASH_TIME', payload: data});
+  } catch (err) {
+    yield put({type: 'SET_BOOKED_CAR_WASH_TIME_ERROR'})
+  }
+}
+
+function* cancelMyCarWashTimeSaga(payload: any) {
+  try {
+    const { bookNum } = payload.payload;
+    const data: AxiosResponse<any> = yield call(cancelMyCarWashTime, bookNum)
+    yield put({type: 'CANCEL_BOOKED_CAR_WASH_TIME', payload: data});
+  } catch (err) {
+    yield put({type: 'CANCEL_BOOKED_CAR_WASH_TIME_ERROR'})
+  }
+}
 
 function* watchGetCarWashesSaga() {
   yield takeEvery('GET_ALL_CAR_WASHES', getAllCarWashesSaga);
@@ -100,12 +139,22 @@ function* watchBookCarWashTimeSaga() {
   yield takeEvery('BOOK_CAR_WASH', bookCarWashTimeSaga);
 }
 
+function* watchGetMyCarWashTimeSaga() {
+  yield takeEvery('GET_MY_CAR_WASH_TIME', getMyCarWashTimeSaga);
+}
+
+function* watchCancelMyCarWashTimeSaga() {
+  yield takeEvery('CANCEL_MY_CAR_WASH_TIME', cancelMyCarWashTimeSaga);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(watchGetCarWashesSaga),
     fork(watchFindCarWashesSaga),
     fork(watchFindCarWashSaga),
-    fork(watchBookCarWashTimeSaga)
+    fork(watchBookCarWashTimeSaga),
+    fork(watchGetMyCarWashTimeSaga),
+    fork(watchCancelMyCarWashTimeSaga)
   ]);
 }
 
