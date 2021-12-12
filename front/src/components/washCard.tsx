@@ -13,14 +13,15 @@ import {
   ListItem,
   Radio,
   RadioGroup,
+  TextField,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, { FC, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { bookCarWash } from '../store/actions';
+import { bookCarWash } from "../store/actions";
 
 interface IProps {
   open: boolean;
@@ -34,6 +35,8 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen, onClose, addRoute }) => {
     (data: any) => data.carWashesReducer.carWashFreeTime
   );
   const [checkedTime, setCheckedTime] = useState<string | null>(null);
+  const [numCar, setNumCar] = useState<string>("");
+  const dispatch = useDispatch();
 
   const formatTime = (time: Date): string => {
     const minutes = time
@@ -100,17 +103,30 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen, onClose, addRoute }) => {
     );
   };
 
-  console.log(formatedTimes);
   const handleTakeTime = () => {
     addRoute(wash.coordinates);
     onClose();
+    if (checkedTime) {
+      const [boxNum, time] = checkedTime?.split(" ");
+
+      dispatch({
+        type: "BOOK_CAR_WASH",
+        payload: { carWashId: wash.id, time, numCar, boxNum },
+      });
+    }
   };
+
   const useStyles = makeStyles({
     root: {
       marginTop: "64px",
     },
   });
   const classes = useStyles();
+
+  const handleChangeNumCar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNumCar((event.target as HTMLInputElement).value);
+  };
+
   return (
     <Drawer
       anchor="right"
@@ -129,8 +145,30 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen, onClose, addRoute }) => {
             }
             avatar={<Avatar />}
           ></CardHeader>
-          <CardActions sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-            <Button variant="outlined" sx={{ px: 12 }} onClick={handleTakeTime}>
+          <CardActions
+            sx={{
+              p: 2,
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <TextField
+              label="Введите номер машины"
+              variant="outlined"
+              onChange={handleChangeNumCar}
+              value={numCar}
+              fullWidth
+              sx={{
+                mb: 2,
+              }}
+            />
+            <Button
+              disabled={!numCar || !checkedTime}
+              variant="outlined"
+              sx={{ px: 12 }}
+              onClick={handleTakeTime}
+            >
               забронировать
             </Button>
           </CardActions>
