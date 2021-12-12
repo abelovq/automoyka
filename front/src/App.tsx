@@ -6,33 +6,32 @@ import { Button, Container } from '@mui/material';
 import { YMaps, Map, Placemark } from 'react-yandex-maps';
 import Navbar from './components/Navbar';
 import { getAllCarWashes } from './store/actions';
+import WashCard from './components/washCard';
 
 function App() {
+  const [open, setOpen] = useState(false);
   const carWashes = useSelector((data: any) => data.carWashesReducer.carWashes);
   const dispatch = useDispatch();
   let mapRef = useRef();
   const yMapRef = useRef();
   const [yourPos, setYourPos] = useState<any>([]);
+  const [chosenWash, setChosenWash] = useState({});
 
   useEffect(() => {
     dispatch(getAllCarWashes());
     window.navigator.geolocation.getCurrentPosition((data: any) => {
-      console.log(`data`, data);
       const { latitude, longitude } = data.coords;
 
       setYourPos([latitude, longitude]);
     });
   }, []);
-  let layoutClass;
   const onAvailable = (ymaps: any) => {
     yMapRef.current = ymaps;
-    layoutClass = (yMapRef.current as any).templateLayoutFactory.createClass(
-      '<h1 class="{{ options.colorClass }}">' +
-        '{{ properties.header|default:"Title" }}' +
-        '</h1>'
-    );
   };
-
+  const handlePlaceMarkClick = (el: any) => () => {
+    setChosenWash({ ...el });
+    setOpen(true);
+  };
   const addRoute = () => {
     if (yMapRef.current && mapRef.current) {
       const pointA = [47.24, 38.92]; // Москва
@@ -84,6 +83,7 @@ function App() {
                       hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
                     }}
                     modules={['geoObject.addon.hint']}
+                    onClick={handlePlaceMarkClick(el)}
                   />
                 ))}
               <Placemark
@@ -98,6 +98,7 @@ function App() {
           </YMaps>
         </div>
         <Button onClick={addRoute}>CLICK</Button>
+        <WashCard wash={chosenWash} open={open} onOpen={() => setOpen(!open)} />
       </Container>
     </div>
   );
