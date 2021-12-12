@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./App.css";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useRef, useState } from 'react';
+import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { Button, Container } from "@mui/material";
-import { YMaps, Map, Placemark } from "react-yandex-maps";
-import Navbar from "./components/Navbar";
-import { getAllCarWashes } from "./store/actions";
-import WashCard from "./components/washCard";
+import { Button, Container } from '@mui/material';
+import { YMaps, Map, Placemark } from 'react-yandex-maps';
+import Navbar from './components/Navbar';
+import { getAllCarWashes } from './store/actions';
+import WashCard from './components/washCard';
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -16,6 +16,7 @@ function App() {
   const yMapRef = useRef();
   const [yourPos, setYourPos] = useState<any>([]);
   const [chosenWash, setChosenWash] = useState({});
+  const [currRoute, setCurrRoute] = useState(null);
 
   useEffect(() => {
     dispatch(getAllCarWashes());
@@ -34,6 +35,7 @@ function App() {
   };
   const addRoute = (washCoordinate: number[]) => {
     if (yMapRef.current && mapRef.current) {
+      (mapRef.current as any).geoObjects.remove(currRoute);
       const pointA = yourPos; // Москва
       const pointB = washCoordinate; // Санкт-Петербург
       const yMapRefInstance = yMapRef.current as any;
@@ -41,14 +43,14 @@ function App() {
         {
           referencePoints: [pointA, pointB],
           params: {
-            routingMode: "pedestrian",
+            routingMode: 'pedestrian',
           },
         },
         {
           boundsAutoApply: true,
         }
       );
-      (mapRef.current as any).geoObjects.removeAll();
+      setCurrRoute(multiRoute);
       (mapRef.current as any).geoObjects.add(multiRoute);
     }
   };
@@ -56,55 +58,54 @@ function App() {
   return (
     <div className="App">
       <Navbar />
-      <Container>
-        <div style={{ paddingTop: 64, height: "calc(100% - 64px)" }}>
-          <YMaps query={{ apikey: "34db5965-1cd4-4b5a-85e0-5c21b37151be" }}>
-            <Map
-              instanceRef={(ref: any) => (mapRef.current = ref)}
-              modules={[
-                "multiRouter.MultiRoute",
-                "templateLayoutFactory",
-                "layout.ImageWithContent",
-              ]}
-              width="100"
-              height="100%"
-              defaultState={{
-                center: [47.241633, 38.867601],
-                zoom: 12,
-                controls: [],
+
+      <div style={{ paddingTop: 64, height: 'calc(100% - 64px)' }}>
+        <YMaps query={{ apikey: '34db5965-1cd4-4b5a-85e0-5c21b37151be' }}>
+          <Map
+            instanceRef={(ref: any) => (mapRef.current = ref)}
+            modules={[
+              'multiRouter.MultiRoute',
+              'templateLayoutFactory',
+              'layout.ImageWithContent',
+            ]}
+            width="100"
+            height="100%"
+            defaultState={{
+              center: yourPos,
+              zoom: 12,
+              controls: [],
+            }}
+            onLoad={onAvailable}
+          >
+            {carWashes &&
+              carWashes.map((el: any) => (
+                <Placemark
+                  geometry={el.coordinates}
+                  properties={{
+                    hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
+                  }}
+                  modules={['geoObject.addon.hint']}
+                  onClick={handlePlaceMarkClick(el)}
+                />
+              ))}
+            <Placemark
+              geometry={yourPos}
+              options={{
+                preset: 'islands#circleDotIcon',
+                iconColor: '#2A2D33',
+                iconCaption: 'Я',
               }}
-              onLoad={onAvailable}
-            >
-              {carWashes &&
-                carWashes.map((el: any) => (
-                  <Placemark
-                    geometry={el.coordinates}
-                    properties={{
-                      hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
-                    }}
-                    modules={["geoObject.addon.hint"]}
-                    onClick={handlePlaceMarkClick(el)}
-                  />
-                ))}
-              <Placemark
-                geometry={yourPos}
-                options={{
-                  preset: "islands#circleDotIcon",
-                  iconColor: "#2A2D33",
-                  iconCaption: "Я",
-                }}
-              />
-            </Map>
-          </YMaps>
-        </div>
-        {/* <Button onClick={addRoute}>CLICK</Button> */}
-        <WashCard
-          wash={chosenWash}
-          open={open}
-          onOpen={() => setOpen(!open)}
-          addRoute={addRoute}
-        />
-      </Container>
+            />
+          </Map>
+        </YMaps>
+      </div>
+      {/* <Button onClick={addRoute}>CLICK</Button> */}
+      <WashCard
+        wash={chosenWash}
+        open={open}
+        onOpen={() => setOpen(!open)}
+        addRoute={addRoute}
+      />
     </div>
   );
 }
