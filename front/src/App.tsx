@@ -22,8 +22,12 @@ function App() {
     dispatch(getAllCarWashes());
     window.navigator.geolocation.getCurrentPosition((data: any) => {
       const { latitude, longitude } = data.coords;
-
-      setYourPos([latitude, longitude]);
+      const defaultPosition = [47.2212664, 38.9144443]
+      console.log([latitude, longitude])
+      if(isNaN(latitude) || isNaN(longitude)) 
+        setYourPos(defaultPosition);
+      else
+        setYourPos([latitude, longitude]);
     });
   }, []);
   const onAvailable = (ymaps: any) => {
@@ -59,47 +63,51 @@ function App() {
   return (
     <div className="App">
       <Navbar />
-
       <div style={{ paddingTop: 64, height: 'calc(100% - 64px)' }}>
-        <YMaps query={{ apikey: '34db5965-1cd4-4b5a-85e0-5c21b37151be' }}>
-          <Map
-            instanceRef={(ref: any) => (mapRef.current = ref)}
-            modules={[
-              'multiRouter.MultiRoute',
-              'templateLayoutFactory',
-              'layout.ImageWithContent',
-            ]}
-            width="100"
-            height="100%"
-            defaultState={{
-              center: yourPos,
-              zoom: 12,
-              controls: [],
-            }}
-            onLoad={onAvailable}
-          >
-            {carWashes &&
-              carWashes.map((el: any) => (
-                <Placemark
-                  geometry={el.coordinates}
-                  properties={{
-                    hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
-                  }}
-                  modules={['geoObject.addon.hint']}
-                  onClick={handlePlaceMarkClick(el)}
-                />
-              ))}
-            <Placemark
-              geometry={yourPos}
-              options={{
-                preset: 'islands#circleDotIcon',
-                iconColor: '#2A2D33',
-                iconCaption: 'Я',
-              }}
-            />
-          </Map>
-        </YMaps>
-      </div>
+      {
+       yourPos.length !== 0 && 
+       <YMaps query={{ apikey: '34db5965-1cd4-4b5a-85e0-5c21b37151be' }}>
+         <Map
+           instanceRef={(ref: any) => (mapRef.current = ref)}
+           modules={[
+             'multiRouter.MultiRoute',
+             'templateLayoutFactory',
+             'layout.ImageWithContent',
+           ]}
+           width="100"
+           height="100%"
+           defaultState={{
+             center: yourPos,
+             zoom: 12,
+             controls: [],
+           }}
+           onLoad={onAvailable}
+         >
+           {carWashes &&
+             carWashes.map((el: any) => (
+               <Placemark
+                 geometry={el.coordinates}
+                 properties={{
+                   hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
+                 }}
+                 modules={['geoObject.addon.hint']}
+                 onClick={handlePlaceMarkClick(el)}
+               />
+             ))}
+           <Placemark
+             geometry={yourPos}
+             options={{
+               preset: 'islands#circleDotIcon',
+               iconColor: '#2A2D33',
+               iconCaption: 'Я',
+             }}
+           />
+         </Map>
+       </YMaps>
+      }
+      {yourPos.length === 0 && 'Loading Map...' }
+     </div>
+
       {/* <Button onClick={addRoute}>CLICK</Button> */}
       <WashCard
         wash={chosenWash}

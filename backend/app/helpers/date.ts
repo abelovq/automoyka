@@ -1,6 +1,6 @@
 export const getTodayDateWithTime = (hour: number, minute: number): Date => {
   const d = new Date();
-  d.setHours(hour + 3);
+  d.setHours(hour);
   d.setMinutes(minute);
   d.setSeconds(0);
   d.setMilliseconds(0);
