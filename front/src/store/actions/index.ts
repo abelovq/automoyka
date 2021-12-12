@@ -21,3 +21,12 @@ export const bookCarWash = (data: any) => ({
   type: "BOOK_CAR_WASH",
   payload: data,
 });
+
+export const getMyCarWashTime= (data: any) => {
+  console.log(`data`, data)
+  return {
+    type: "GET_MY_CAR_WASH_TIME",
+    payload: data,
+
+  }
+};

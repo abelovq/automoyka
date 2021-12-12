@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FC, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import {
@@ -12,6 +12,9 @@ import {
   Button,
   Accordion,
   AccordionSummary,
+  TextField,
+  Card,
+  CardContent,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import MyCheckbox from './Checkbox';
@@ -20,11 +23,24 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import { getMyCarWashTime } from '../store/actions';
+
 const useStyles = makeStyles({
   drawerPaper: {
     marginTop: '64px',
   },
 });
+
+const formatTime = (time: Date): string => {
+  const minutes = time
+    .toLocaleDateString('ru-RU', { minute: '2-digit' })
+    .split(' ')[1];
+  return `${
+    Number(
+      time.toLocaleDateString('ru-RU', { hour: '2-digit' }).split(' ')[1]
+    ) - 3
+  }:${minutes == '0' ? '00' : minutes}`;
+};
 
 interface IProps {
   open: boolean;
@@ -86,6 +102,10 @@ const Aside: FC<IProps> = ({ open, onOpen, onClose }) => {
     }
     return o;
   });
+  const myCarWashes = useSelector(
+    (data: any) => data.carWashesReducer.myCarWashes
+  );
+  const [carNum, setCarNum] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.name === 'ALL') {
@@ -129,6 +149,12 @@ const Aside: FC<IProps> = ({ open, onOpen, onClose }) => {
       );
     });
     onClose();
+  };
+
+  const handleGetBooksk = () => {
+    if (carNum) {
+      dispatch(getMyCarWashTime({ carNum }));
+    }
   };
 
   return (
@@ -194,11 +220,33 @@ const Aside: FC<IProps> = ({ open, onOpen, onClose }) => {
             <Typography>Мои брони</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
+            <TextField
+              id="outlined-basic"
+              label="Введите номер авто"
+              variant="outlined"
+              onChange={(e: any) => setCarNum(e.target.value)}
+              value={carNum}
+              sx={{ mb: 2 }}
+            />
+            <Button variant="outlined" onClick={handleGetBooksk}>
+              Получить мои брони
+            </Button>
+            {myCarWashes &&
+              myCarWashes.map((el: any) => (
+                <Card>
+                  <CardContent>
+                    <Typography
+                      sx={{ fontSize: 14 }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      {formatTime(new Date(el.time_start))}
+                      <br />
+                      Номер бокса: {el.num_box}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
           </AccordionDetails>
         </Accordion>
       </Box>

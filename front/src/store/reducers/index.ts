@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 const initState = {
   carWashes: [],
   carWashFreeTime: {},
+  myCarWashes: []
 };
 const carWashesReducer = (state = initState, action: any) => {
   switch (action.type) {
@@ -21,6 +22,12 @@ const carWashesReducer = (state = initState, action: any) => {
       return {
         ...state,
         carWashFreeTime: action.payload,
+      };
+    }
+    case "SET_BOOKED_CAR_WASH_TIME" : {
+      return {
+        ...state,
+        myCarWashes: action.payload,
       };
     }
     default:
