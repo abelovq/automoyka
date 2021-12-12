@@ -114,6 +114,8 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen, onClose, addRoute }) => {
         payload: { carWashId: wash.id, time, numCar, boxNum },
       });
     }
+    setNumCar("");
+    setCheckedTime(null);
   };
 
   const useStyles = makeStyles({

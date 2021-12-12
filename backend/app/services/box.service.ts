@@ -68,6 +68,15 @@ class BoxService {
         where: {
           ...getWhere(),
         },
+        include: {
+          wash: {
+            select: {
+              name: true,
+              adress: true,
+              duration: true,
+            },
+          },
+        },
       })
       .catch((e) => {
         throw new HttpException(404, "Cannot find any booked boxes");
