@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -12,41 +12,47 @@ function App() {
   const dispatch = useDispatch();
   let mapRef = useRef();
   const yMapRef = useRef();
+  const [yourPos, setYourPos] = useState<any>([]);
 
   useEffect(() => {
     dispatch(getAllCarWashes());
-  }, []);
+    window.navigator.geolocation.getCurrentPosition((data: any) => {
+      console.log(`data`, data);
+      const { latitude, longitude } = data.coords;
 
+      setYourPos([latitude, longitude]);
+    });
+  }, []);
+  let layoutClass;
   const onAvailable = (ymaps: any) => {
     yMapRef.current = ymaps;
-    console.log(`adada.current`, yMapRef.current);
+    layoutClass = (yMapRef.current as any).templateLayoutFactory.createClass(
+      '<h1 class="{{ options.colorClass }}">' +
+        '{{ properties.header|default:"Title" }}' +
+        '</h1>'
+    );
   };
 
   const addRoute = () => {
-    console.log(`yMapRef.current`, yMapRef.current);
-    console.log(`mapRef.current`, mapRef.current);
     if (yMapRef.current && mapRef.current) {
-      console.log(`131`, 131);
-      const pointA = [55.749, 37.524]; // Москва
-      const pointB = [59.918072, 30.304908]; // Санкт-Петербург
-      console.log(`MapRef.current`, mapRef.current);
-      // const multiRoute = new ymaps.multiRouter.MultiRoute(
-      //   {
-      //     referencePoints: [pointA, pointB],
-      //     params: {
-      //       routingMode: 'pedestrian',
-      //     },
-      //   },
-      //   {
-      //     boundsAutoApply: true,
-      //   }
-      // );
-      // // if (mapRef.current) {
-      // (mapRef.current as any).geoObjects.add(multiRoute);
+      const pointA = [47.24, 38.92]; // Москва
+      const pointB = [47.279331, 38.923033]; // Санкт-Петербург
+      const yMapRefInstance = yMapRef.current as any;
+      const multiRoute = new yMapRefInstance.multiRouter.MultiRoute(
+        {
+          referencePoints: [pointA, pointB],
+          params: {
+            routingMode: 'pedestrian',
+          },
+        },
+        {
+          boundsAutoApply: true,
+        }
+      );
+      (mapRef.current as any).geoObjects.removeAll();
+      (mapRef.current as any).geoObjects.add(multiRoute);
     }
   };
-
-  // console.log(`yMapRef.current`, yMapRef.current);
 
   return (
     <div className="App">
@@ -55,12 +61,16 @@ function App() {
         <div style={{ paddingTop: 64, height: 'calc(100% - 64px)' }}>
           <YMaps query={{ apikey: '34db5965-1cd4-4b5a-85e0-5c21b37151be' }}>
             <Map
-              instanceRef={() => mapRef}
-              modules={['multiRouter.MultiRoute']}
+              instanceRef={(ref: any) => (mapRef.current = ref)}
+              modules={[
+                'multiRouter.MultiRoute',
+                'templateLayoutFactory',
+                'layout.ImageWithContent',
+              ]}
               width="100"
               height="100%"
               defaultState={{
-                center: [47.24, 38.92],
+                center: [47.241633, 38.867601],
                 zoom: 12,
                 controls: [],
               }}
@@ -76,6 +86,14 @@ function App() {
                     modules={['geoObject.addon.hint']}
                   />
                 ))}
+              <Placemark
+                geometry={yourPos}
+                options={{
+                  preset: 'islands#circleDotIcon',
+                  iconColor: '#2A2D33',
+                  iconCaption: 'Я',
+                }}
+              />
             </Map>
           </YMaps>
         </div>
