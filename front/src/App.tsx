@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import './App.css';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { Button, Container } from '@mui/material';
-import { YMaps, Map, Placemark } from 'react-yandex-maps';
-import Navbar from './components/Navbar';
-import { getAllCarWashes } from './store/actions';
+import React, { useEffect, useRef, useState } from "react";
+import "./App.css";
+import { useSelector, useDispatch } from "react-redux";
+import WashCard from "./components/washCard";
+import { Button, Container } from "@mui/material";
+import { YMaps, Map, Placemark } from "react-yandex-maps";
+import Navbar from "./components/Navbar";
+import { getAllCarWashes } from "./store/actions";
 
 function App() {
+  const [open, setOpen] = useState(false);
   const carWashes = useSelector((data: any) => data.carWashesReducer.carWashes);
   const dispatch = useDispatch();
   let mapRef = useRef();
@@ -21,7 +22,9 @@ function App() {
     yMapRef.current = ymaps;
     console.log(`adada.current`, yMapRef.current);
   };
-
+  const handlePlaceMarkClick = () => {
+    setOpen(true);
+  };
   const addRoute = () => {
     console.log(`yMapRef.current`, yMapRef.current);
     console.log(`mapRef.current`, mapRef.current);
@@ -52,11 +55,11 @@ function App() {
     <div className="App">
       <Navbar />
       <Container>
-        <div style={{ paddingTop: 64, height: 'calc(100% - 64px)' }}>
-          <YMaps query={{ apikey: '34db5965-1cd4-4b5a-85e0-5c21b37151be' }}>
+        <div style={{ paddingTop: 64, height: "calc(100% - 64px)" }}>
+          <YMaps query={{ apikey: "34db5965-1cd4-4b5a-85e0-5c21b37151be" }}>
             <Map
               instanceRef={() => mapRef}
-              modules={['multiRouter.MultiRoute']}
+              modules={["multiRouter.MultiRoute"]}
               width="100"
               height="100%"
               defaultState={{
@@ -73,13 +76,15 @@ function App() {
                     properties={{
                       hintContent: `<div><div>${el.name}</div><div>${el.adress}</div></div>`,
                     }}
-                    modules={['geoObject.addon.hint']}
+                    modules={["geoObject.addon.hint"]}
+                    onClick={handlePlaceMarkClick}
                   />
                 ))}
             </Map>
           </YMaps>
         </div>
         <Button onClick={addRoute}>CLICK</Button>
+        <WashCard open={open} onOpen={() => setOpen(!open)} />
       </Container>
     </div>
   );
