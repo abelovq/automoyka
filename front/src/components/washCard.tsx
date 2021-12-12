@@ -11,23 +11,27 @@ import {
   FormGroup,
   List,
   ListItem,
-  Paper,
   Radio,
   Typography,
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { Box } from '@mui/system';
-import React, { FC } from 'react';
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Box } from "@mui/system";
+import React, { FC } from "react";
 
 interface IProps {
   open: boolean;
   onOpen: (e: any) => void;
   wash: any;
+  addRoute: any;
 }
-const WashCard: FC<IProps> = ({ wash, open, onOpen }) => {
+const WashCard: FC<IProps> = ({ wash, open, onOpen, addRoute }) => {
+  const handleTakeTime = () => {
+    // диспатч экшена бронирования
+    addRoute(wash.coordinates);
+  };
   const useStyles = makeStyles({
     root: {
-      marginTop: '64px',
+      marginTop: "64px",
     },
   });
   const classes = useStyles();
@@ -39,7 +43,7 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen }) => {
       onClose={onOpen}
     >
       <Box sx={{ width: 300 }} role="presentation">
-        <Card sx={{ boxShadow: 'none' }}>
+        <Card sx={{ boxShadow: "none" }}>
           <CardHeader
             title={
               <div>
@@ -58,7 +62,7 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen }) => {
                   variant="standard"
                 >
                   <FormGroup>
-                    <Radio sx={{ display: 'none' }} />
+                    <Radio sx={{ display: "none" }} />
                     <FormControlLabel
                       label="11-20"
                       labelPlacement="end"
@@ -69,9 +73,9 @@ const WashCard: FC<IProps> = ({ wash, open, onOpen }) => {
               </ListItem>
             </List>
           </CardContent>
-          <CardActions sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Button variant="outlined" sx={{ px: 12 }}>
-              get time
+          <CardActions sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+            <Button variant="outlined" sx={{ px: 12 }} onClick={handleTakeTime}>
+              забронировать
             </Button>
           </CardActions>
         </Card>
