@@ -105,6 +105,7 @@ function App() {
         open={open}
         onOpen={() => setOpen(!open)}
         addRoute={addRoute}
+        onClose={() => setOpen(false)}
       />
     </div>
   );

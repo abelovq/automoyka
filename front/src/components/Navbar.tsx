@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 
 import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
@@ -41,7 +41,7 @@ const Navbar = () => {
         </IconButton>
         CarWash
       </Toolbar>
-      <Aside open={open} onOpen={toggleDrawer} />
+      <Aside open={open} onClose={() => setOpen(false)} onOpen={toggleDrawer} />
     </AppBar>
   );
 };

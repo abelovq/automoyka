@@ -1,7 +1,7 @@
-import React, { FC, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
+import React, { FC, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
 import {
   Drawer,
   FormControl,
@@ -10,30 +10,31 @@ import {
   FormLabel,
   ListItem,
   Button,
-} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import MyCheckbox from "./Checkbox";
-import { filterSearch } from "../store/actions";
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import MyCheckbox from './Checkbox';
+import { filterSearch } from '../store/actions';
 
 const useStyles = makeStyles({
   drawerPaper: {
-    marginTop: "64px",
+    marginTop: '64px',
   },
 });
 
 interface IProps {
   open: boolean;
   onOpen: (e: any) => void;
+  onClose: any;
 }
 
 enum CarWashType {
-  ALL = "ALL",
-  CONTACT = "CONTACT",
-  MANUAL = "MANUAL",
-  SELF_SERVICE = "SELF_SERVICE",
-  FERRY = "FERRY",
-  ROBOT = "ROBOT",
-  NEAR = "NEAR",
+  ALL = 'ALL',
+  CONTACT = 'CONTACT',
+  MANUAL = 'MANUAL',
+  SELF_SERVICE = 'SELF_SERVICE',
+  FERRY = 'FERRY',
+  ROBOT = 'ROBOT',
+  NEAR = 'NEAR',
 }
 
 type Filter = {
@@ -45,32 +46,32 @@ type Filter = {
 const filters: Filter[] = [
   {
     id: 1,
-    label: "Все",
+    label: 'Все',
     value: CarWashType.ALL,
   },
   {
     id: 2,
-    label: "Контактная мойка",
+    label: 'Контактная мойка',
     value: CarWashType.CONTACT,
   },
   {
     id: 3,
-    label: "Ручная мойка",
+    label: 'Ручная мойка',
     value: CarWashType.MANUAL,
   },
   {
     id: 4,
-    label: "Мойка самообслуживания",
+    label: 'Мойка самообслуживания',
     value: CarWashType.SELF_SERVICE,
   },
-  { id: 5, label: "Мойка паром", value: CarWashType.FERRY },
-  { id: 6, label: "Робот мойка", value: CarWashType.ROBOT },
-  { id: 7, label: "Рядом со мной", value: CarWashType.NEAR },
+  { id: 5, label: 'Мойка паром', value: CarWashType.FERRY },
+  { id: 6, label: 'Робот мойка', value: CarWashType.ROBOT },
+  { id: 7, label: 'Рядом со мной', value: CarWashType.NEAR },
 ];
 
 console.log(`filters`, filters[0].value);
 
-const Aside: FC<IProps> = ({ open, onOpen }) => {
+const Aside: FC<IProps> = ({ open, onOpen, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [state, setState] = React.useState<{ [props: string]: boolean }>(() => {
@@ -82,7 +83,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.name === "ALL") {
+    if (event.target.name === 'ALL') {
       const keys = Object.keys(state);
       const newState: typeof state = {};
       for (const key of keys) {
@@ -101,7 +102,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
     const keys = Object.keys(state);
     const newState: typeof state = {};
     for (const key of keys) {
-      newState[key] = key === "NEAR" ? false : true;
+      newState[key] = key === 'NEAR' ? false : true;
     }
     setState(newState);
   }, []);
@@ -122,6 +123,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
         })
       );
     });
+    onClose();
   };
 
   return (
@@ -133,7 +135,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
         paper: classes.drawerPaper,
       }}
     >
-      <Box sx={{ width: 300, marginTop: "64px" }} role="presentation">
+      <Box sx={{ width: 300, marginTop: '64px' }} role="presentation">
         <List>
           <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
             <FormLabel component="legend">Filters</FormLabel>
@@ -144,7 +146,7 @@ const Aside: FC<IProps> = ({ open, onOpen }) => {
                     control={
                       <MyCheckbox
                         checked={
-                          el.value === "ALL"
+                          el.value === 'ALL'
                             ? Object.values(state)
                                 .slice(1)
                                 .every((item) => item)
