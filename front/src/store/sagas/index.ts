@@ -29,6 +29,20 @@ const getOneCarWash = async(carWashId: number): Promise<any> => {
   }
 }
 
+
+const bookCarWashTime = async(carWashId: number, time: any, numCar: string, boxNum: string): Promise<any> => {
+  try {
+    const request = await axios.post<any>(`http://localhost:3001/api/wash/${carWashId}/book`, {
+      time,
+      num_car: numCar,
+      num_box: boxNum
+    })
+    return request.data
+  } catch(err) {
+    return err
+  }
+}
+
 function* getAllCarWashesSaga() {
   try {
     const data: AxiosResponse<any> = yield call(getCarWashes)
@@ -59,6 +73,15 @@ function* getCarWashInfo(payload: any) {
   }
 }
 
+function* bookCarWashTimeSaga(payload: any) {
+  try {
+    const { carWashId, time, numCar, boxNum } = payload.payload;
+    const data: AxiosResponse<any> = yield call(bookCarWashTime, carWashId, time, numCar, boxNum)
+    yield put({type: 'SET_BOOK_CAR_WASH', payload: data});
+  } catch (err) {
+    yield put({type: 'SET_BOOK_CAR_WASH_ERROR'})
+  }
+}
 
 
 function* watchGetCarWashesSaga() {
@@ -73,11 +96,16 @@ function* watchFindCarWashSaga() {
   yield takeEvery('FIND_CAR_WASH', getCarWashInfo);
 }
 
+function* watchBookCarWashTimeSaga() {
+  yield takeEvery('BOOK_CAR_WASH', bookCarWashTimeSaga);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(watchGetCarWashesSaga),
     fork(watchFindCarWashesSaga),
     fork(watchFindCarWashSaga),
+    fork(watchBookCarWashTimeSaga)
   ]);
 }
 
