@@ -1,8 +1,9 @@
 import { CarWashType, Car_Wash, Busy_boxes } from ".prisma/client";
 import { getNearestCarWash } from "../middleware/nearestSearch";
 import HttpException from "../exceptions/HttpExceptions";
-import { addMinutes, getTodayDateWithTime } from "../helpers/date";
+import { addMinutes, getTodayDateWithTime, getNow } from "../helpers/date";
 import prisma from "../prisma";
+import { CarWashToUser } from "../Classes/CarWashToUser";
 
 type WashWithBoxes = Car_Wash & {
   busy_boxes: Busy_boxes[];
@@ -20,7 +21,7 @@ class WashServise {
   async getNearest(user: number[]) {
     const allWash = await prisma.car_Wash.findMany();
     const res = getNearestCarWash(allWash, user);
-    return res.filter((i: any) => {
+    return res.filter((i: CarWashToUser | null) => {
       return i != null;
     });
   }
@@ -64,12 +65,12 @@ class WashServise {
           busy_boxes: {
             where: {
               time_start: {
-                gte: getTodayDateWithTime(8, 0),
-                lt: getTodayDateWithTime(20, 0),
+                gte: getNow(),
               },
             },
             select: {
               time_start: true,
+              num_box: true,
             },
           },
         },
@@ -84,24 +85,33 @@ class WashServise {
     const wash = (await this.getWashById(wash_Id)) as WashWithBoxes;
     if (!wash) throw new HttpException(404, "Cannot find any wash");
 
-    const busyBoxes = wash.busy_boxes.map((b) => ({
-      num_box: b.num_box,
-      time_start: b.time_start,
-    }));
+    const busyBoxes = wash.busy_boxes;
     const times = this.genereateTimes(wash.duration);
 
     const box_times = new Array(wash.boxs_count)
       .fill(1)
       .reduce((prev, cur, index) => {
         const numOfBox = index + 1;
-        console.log("numOfBox");
+        const busy_time = busyBoxes
+          .filter((v) => v.num_box === numOfBox)
+          .map((b) => b.time_start);
+
+        if (!busy_time.length)
+          return {
+            ...prev,
+            [String(numOfBox)]: times,
+          };
         return {
-          ...cur,
-          [numOfBox]: busyBoxes.find((v) => v.num_box === numOfBox),
+          ...prev,
+          [String(numOfBox)]: times.filter((time) => {
+            return !busyBoxes.filter(
+              (b) => b.time_start.valueOf() == time.valueOf()
+            ).length;
+          }),
         };
       }, {});
 
-    console.log(box_times);
+    return box_times;
   }
 
   private genereateTimes(duration: number) {
@@ -114,12 +124,7 @@ class WashServise {
       curTime = addMinutes(curTime, duration);
     }
 
-    const nowTime = new Date();
-    const nowUTC = getTodayDateWithTime(
-      nowTime.getHours(),
-      nowTime.getMinutes()
-    );
-    return timesOfWash.filter((t) => t.valueOf() > nowUTC.valueOf());
+    return timesOfWash.filter((t) => t.valueOf() > getNow().valueOf());
   }
 }
 

@@ -14,6 +14,7 @@ class BoxService {
     const busyBoxesCount = await prisma.busy_boxes.findMany({
       where: {
         wash_id: boxData.wash_id,
+        time_start: boxData.time_start,
       },
     });
 
